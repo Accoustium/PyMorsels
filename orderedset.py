@@ -1,0 +1,3 @@
+class OrderedSet:
+    def __init__(self, list_of_values):
+        ...

@@ -11,11 +11,8 @@ class window:
         else:
             self.step = self.step[0]
 
-    def __iter__(self):
-        return iter(list(self.generate_list()))
-
     def __next__(self):
-        ...
+        return next(self.generate_list())
 
     def generate_list(self):
         if self.step == 0:
@@ -25,23 +22,24 @@ class window:
         while True:
             for stride in range(self.step):
                 try:
-                    return_tuple.append(self.curr_list[self.curr_iteration + stride])
+                    return_tuple.append(self.curr_list[stride])
                 except IndexError:
                     try:
                         self.curr_list.append(next(self.iterable))
-                        return_tuple.append(self.curr_list[self.curr_iteration + stride])
+                        return_tuple.append(self.curr_list[stride])
                     except StopIteration:
                         self.curr_list.append(self.fill_value)
                         self.stop = True
-                        return_tuple.append(self.curr_list[self.curr_iteration + stride])
+                        return_tuple.append(self.curr_list[stride])
 
+            self.curr_iteration += 1
             if self.stop and self.curr_iteration == 0:
                 yield tuple(return_tuple)
                 break
             else:
                 if not self.stop:
+                    self.curr_list.pop(0)
                     yield tuple(return_tuple)
-                self.curr_iteration += 1
                 return_tuple = []
                 if self.stop:
                     break

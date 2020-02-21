@@ -11,8 +11,11 @@ class window:
         else:
             self.step = self.step[0]
 
+    def __iter__(self):
+        return self
+
     def __next__(self):
-        return next(self.generate_list())
+        return next(iter(self.generate_list()))
 
     def generate_list(self):
         if self.step == 0:
@@ -37,7 +40,7 @@ class window:
                 yield tuple(return_tuple)
                 break
             else:
-                if not self.stop:
+                if not self.stop or self.curr_iteration == 1:
                     self.curr_list.pop(0)
                     yield tuple(return_tuple)
                 return_tuple = []

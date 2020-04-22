@@ -3,10 +3,6 @@ import csv
 import argparse
 
 
-def find_delimiter(csv):
-    return "|"
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -16,7 +12,7 @@ def main():
     )
     parser.add_argument(
         "outfile",
-        type=argparse.FileType("w"),
+        type=str,
         default=sys.stdout
     )
     parser.add_argument(
@@ -29,15 +25,18 @@ def main():
     )
     args = parser.parse_args()
 
-    old_csv = args.infile.read()
-    old_csv = old_csv.split("\n")
+    dialect = csv.Sniffer().sniff(args.infile.read(1024))
+    args.infile.seek(0)
 
     if not args.in_delimiter:
-        args.in_delimiter = find_delimiter(old_csv)
+        args.in_delimiter = dialect.delimiter
+    if not args.in_quote:
+        args.in_quote = dialect.quotechar
 
     csv_file = csv.reader(args.infile, delimiter=args.in_delimiter, quotechar=args.in_quote)
-
-    args.outfile.write('\n'.join(csv))
+    with open(args.outfile, 'w', newline='') as out_file:
+        writing = csv.writer(out_file, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        writing.writerows(csv_file)
 
 
 if __name__ == "__main__":

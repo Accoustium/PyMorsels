@@ -41,9 +41,9 @@ class OrderedSetTests(unittest.TestCase):
 
     def test_memory_and_time_efficient(self):
         with Timer() as small_set_timer:
-            numbers = OrderedSet([9999 for _ in range(1000)])
+            numbers = OrderedSet([9999 for _ in range(2000)])
         with Timer() as large_set_timer:
-            numbers2 = OrderedSet([9999 + i for i in range(1000)])
+            numbers2 = OrderedSet([9999 + i for i in range(2000)])
 
         # Time efficient construction
         self.assertGreater(
@@ -54,6 +54,17 @@ class OrderedSetTests(unittest.TestCase):
         # Memory efficient
         self.assertLess(get_size(numbers) * 100, get_size(numbers2))
         self.assertLess(get_size(numbers), 2000)
+
+        with Timer() as beginning_lookup:
+            9999 in numbers2
+        with Timer() as end_lookup:
+            -1 in numbers2
+
+        # Time efficient lookups
+        self.assertGreater(
+            beginning_lookup.elapsed * 1.5,
+            end_lookup.elapsed,
+        )
 
     # To test the Bonus part of this exercise, comment out the following line
     @unittest.expectedFailure
@@ -67,6 +78,16 @@ class OrderedSetTests(unittest.TestCase):
         self.assertEqual(len(numbers), 3)
         numbers.discard(4)
         self.assertEqual(len(numbers), 3)
+
+        # Make sure the add method is efficient too!
+        with Timer() as small_set_timer:
+            numbers = OrderedSet([])
+            for n in [9999 for _ in range(2000)]:
+                numbers.add(n)
+        with Timer() as large_set_timer:
+            numbers2 = OrderedSet([])
+            for n in [9999 + i for i in range(2000)]:
+                numbers2.add(n)
 
     # To test the Bonus part of this exercise, comment out the following line
     @unittest.expectedFailure

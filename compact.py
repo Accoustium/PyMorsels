@@ -1,16 +1,20 @@
-def compact(param):
-    try:
-        if type(param) != list:
-            return param
-        value = []
-        for k, v in enumerate(param):
-            if k > 0:
-                if param[k - 1] != v:
-                    value.append(v)
-            else:
-                value.append(v)
+class compact:
+    def __init__(self, param):
+        self.param = param
+        self.prev = None
+        self.curr = self.compact()
 
-        return value
+    def __iter__(self):
+        return self
 
-    except TypeError:
-        return None
+    def __next__(self):
+        num = next(self.curr)
+        return num
+
+    def compact(self):
+        for ind, val in enumerate(self.param):
+            if ind > 0:
+                if val == self.prev:
+                    continue
+            self.prev = val
+            yield self.prev

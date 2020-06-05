@@ -1,16 +1,21 @@
 class deep_flatten:
-    def __init__(self, iterable: list):
-        self.iterable = iter(iterable)
+    def __init__(self, iterable):
+        self.iterable = iterable
+        self.curr = self.flatten(self.iterable)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        yield from self.flatten(self.iterable)
+        num = next(self.curr)
+        return num
 
     def flatten(self, iter_):
+        if type(iter_) == int or type(iter_) == str:
+            yield iter_
+
         for iterable_ in iter_:
-            if type(iterable_) == list or type(iterable_) == tuple:
-                yield from self.flatten(iterable_)
-            else:
+            if type(iterable_) == int or type(iterable_) == str:
                 yield iterable_
+            else:
+                yield from self.flatten(iterable_)

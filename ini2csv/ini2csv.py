@@ -1,5 +1,4 @@
 import sys
-import csv
 import argparse
 import configparser
 
@@ -7,13 +6,18 @@ import configparser
 class IniConfig:
     def __init__(self):
         self.config = configparser.ConfigParser()
+        self.csv_config = {}
+        self.condensed = {}
 
     def read_ini(self, file_name: argparse.FileType):
         self.config.read_string(file_name.read())
+        for header in self.config:
+            for key, value in self.config[header].items():
+                self.config[header][key] = value
 
     def write_csv(self, file_name: argparse.FileType, collapsed: bool=False):
         for header in self.config:
-            for key, value in self.config[header]:
+            for key, value in self.config[header].items():
                 file_name.write(f"{header},{key},{value}\n")
 
 

@@ -1,4 +1,4 @@
-pytestfrom collections.abc import Generator
+from collections.abc import Generator
 import sys
 import unittest
 

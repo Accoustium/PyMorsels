@@ -1,5 +1,7 @@
 from collections.abc import Generator
+from functools import partial
 import sys
+from timeit import timeit
 import unittest
 
 
@@ -44,9 +46,6 @@ class FloatRangeTests(unittest.TestCase):
         )
 
     def test_negative_step(self):
-        with self.assertRaises(StopIteration):
-            # Should be empty so StopIteration should be raised
-            next(iter(float_range(1, 6, -1)))
         self.assertEqual(list(float_range(5, 0, -1)), [5, 4, 3, 2, 1])
         self.assertEqual(
             list(float_range(0.5, 6)),
@@ -56,6 +55,9 @@ class FloatRangeTests(unittest.TestCase):
             list(float_range(6, 1, -0.5)),
             [6, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.5, 2.0, 1.5]
         )
+        with self.assertRaises(StopIteration):
+            # Should be empty so StopIteration should be raised
+            next(iter(float_range(1, 6, -1)))
 
     def test_no_arguments(self):
         with self.assertRaises(TypeError):
@@ -82,18 +84,35 @@ class FloatRangeTests(unittest.TestCase):
         self.assertNotEqual(type(response), list)
         self.assertNotEqual(type(response), tuple)
 
+    # To test the Bonus part of this exercise, comment out the following line
     @unittest.expectedFailure
-    def test_has_length(self):
+    def test_has_length(self): 
+        time = partial(timeit, globals=globals(), number=30)
+        small = time("assert len(float_range(1)) == 1")
+        big = time("assert len(float_range(1000)) == 1000")
+        self.assertLess(big, small*500, "Timing shouldn't grow with size")
         self.assertEqual(len(float_range(100)), 100)
         self.assertEqual(len(float_range(1, 100)), 99)
         self.assertEqual(len(float_range(1, 11, 2)), 5)
+        self.assertEqual(len(float_range(1, 11, -10)), 0)
+        self.assertEqual(len(float_range(0.5, 7, 0.75)), 9)
         self.assertEqual(len(float_range(0.5, 7, 0.75)), 9)
         self.assertEqual(len(float_range(1000000)), 1000000)
         self.assertEqual(len(float_range(11, 1.2, -2)), 5)
         self.assertEqual(len(float_range(11, 1.2, 2)), 0)
+        r = float_range(1, 6, 0.5)
+        self.assertEqual(
+            list(r),
+            [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5]
+        )
+        self.assertEqual(
+            list(r),
+            [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5]
+        )
 
+    # To test the Bonus part of this exercise, comment out the following line
     @unittest.expectedFailure
-    def test_reversed(self):
+    def test_reversed(self): 
         r = reversed(float_range(0.5, 7, 0.75))
         self.assertEqual(
             list(r),
@@ -101,9 +120,19 @@ class FloatRangeTests(unittest.TestCase):
         )
         big_num = 1000000
         self.assertEqual(next(reversed(float_range(big_num))), big_num-1)
+        self.assertEqual(list(reversed(float_range(4, 0, -1))), [1, 2, 3, 4])
 
+    # To test the Bonus part of this exercise, comment out the following line
     @unittest.expectedFailure
-    def test_equality(self):
+    def test_equality(self): 
+        time = partial(timeit, globals=globals(), number=100)
+        small = time(
+            "assert float_range(0, 9.5, 1) == float_range(0, 10, 1)"
+        )
+        big = time(
+            "assert float_range(0, 5000.5, 1) == float_range(0, 5000.2, 1)"
+        )
+        self.assertLess(big, small*50, "Timing shouldn't grow with size")
         self.assertEqual(float_range(0, 5, 0.5), float_range(0, 5, 0.5))
         self.assertEqual(float_range(5, 5), float_range(10, 10))
         self.assertEqual(float_range(5, 11, 5), float_range(5, 12, 5))
@@ -119,6 +148,9 @@ class FloatRangeTests(unittest.TestCase):
             def __eq__(self, other):
                 return True
         self.assertEqual(float_range(1000000), EqualToEverything())
+        self.assertEqual(float_range(0, 5, 3), float_range(0, 4, 3))
+        self.assertEqual(float_range(0, 0.3, 0.5), float_range(0, 0.4, 1.5))
+        self.assertNotEqual(float_range(0, 11, 0.5), float_range(0, 11, 1.5))
 
 
 if __name__ == "__main__":

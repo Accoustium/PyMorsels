@@ -21,23 +21,23 @@ class meetup_date:
         if nth > 0:
             self.meetup: datetime.date = list(
                 filter(
-                    lambda x: x >= datetime.date(year, month, 1),
+                    lambda x: x.month == month and x.year == year,
                     map(
-                        lambda x: x[nth - 1],
+                        lambda x: x[weekday],
                         self.month
                     )
                 )
-            )[weekday]
+            )[nth - 1]
         else:
             self.meetup: datetime.date = list(
                 filter(
-                    lambda x: x >= datetime.date(year, month, 1),
+                    lambda x: x.month == month and x.year == year,
                     map(
-                        lambda x: x[nth],
+                        lambda x: x[weekday],
                         self.month
                     )
                 )
-            )[weekday]
+            )[nth]
 
     def __repr__(self):
         return repr(self.meetup)

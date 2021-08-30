@@ -1,24 +1,21 @@
+from typing import *
+from dataclasses import dataclass
 NO_RETURN = None
 
 
+@dataclass(frozen=True)
 class Call:
-    def __init__(self, args, kwargs, return_value, exception):
-        self.args = args
-        self.kwargs = kwargs
-        self.return_value = return_value
-        self.exception = exception
-
-    def __repr__(self):
-        return (f"Call(args={self.args}, kwargs={self.kwargs}, "
-                f"return_value={self.return_value}, exception={self.exception})")
+    args: tuple
+    kwargs: dict
+    return_value: Any
+    exception: Optional[Exception]
 
 
 class record_calls(object):
-    calls = []
-    call_count = 0
-
     def __init__(self, func):
         self.func = func
+        self.calls = []
+        self.call_count = 0
 
     def __call__(self, *args, **kwargs):
         self.call_count += 1

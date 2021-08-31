@@ -1,25 +1,24 @@
-from typing import *
-
-
 class interleave:
     def __init__(self, *args):
-        self.args: Generator = args
-        self.idx: int = 0
-        self.max_idx: int = max(map(lambda x: len(x), args))
+        self.args: list = [iter(x) for x in args]
+        self.gen = self.__step()
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        num = next(self.__step())
+        num = next(self.gen)
         return num
 
     def __step(self):
-        while self.idx < self.max_idx:
+        while True:
+            count, length = 0, 0
             for leave in self.args:
+                length += 1
                 try:
                     yield next(leave)
                 except StopIteration:
-                    pass
+                    count += 1
 
-            self.idx += 1
+            if count == length:
+                break
